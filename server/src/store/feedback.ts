@@ -4,17 +4,21 @@ type CreateHighlightArgs = {
   feedbackId: number | bigint;
   highlightSummary: string;
   highlightQuote: string;
-}
+};
 
 /**
  * Gets a feedback entry by its id
  * @param id The id of the feedback
  */
 const getFeedback = async (id: number) => {
-  return db.prepare(`SELECT *
+  return db
+    .prepare(
+      `SELECT *
                      FROM Feedback
-                     WHERE id = ?`).get(id)
-}
+                     WHERE id = ?`
+    )
+    .get(id);
+};
 
 /**
  * Gets a page of feedback entries
@@ -22,21 +26,29 @@ const getFeedback = async (id: number) => {
  * @param perPage The number of entries per page
  */
 const getFeedbackPage = async (page: number, perPage: number) => {
-  return db.prepare(`SELECT *
+  return db
+    .prepare(
+      `SELECT *
                      FROM Feedback
                      ORDER BY id DESC
-                     LIMIT ? OFFSET ?`).all(perPage, (page - 1) * perPage)
-}
+                     LIMIT ? OFFSET ?`
+    )
+    .all(perPage, (page - 1) * perPage);
+};
 
 /**
  * Gets the highlights of a feedback entry
  * @param feedbackId The id of the feedback
  */
 const getFeedbackHighlights = async (feedbackId: number) => {
-  return db.prepare(`SELECT *
+  return db
+    .prepare(
+      `SELECT *
                      FROM Highlight
-                     WHERE feedbackId = ?`).all(feedbackId)
-}
+                     WHERE feedbackId = ?`
+    )
+    .all(feedbackId);
+};
 
 /**
  * Counts the number of feedback entries
@@ -46,29 +58,44 @@ const getFeedbackHighlights = async (feedbackId: number) => {
 const countFeedback = (): number => {
   const stmt = db.prepare(`SELECT COUNT(*) as count
                           FROM Feedback`);
-  
+
   const result = stmt.get() as { count: number };
   return result.count;
-}
+};
 
 /**
  * Creates a new feedback entry
  * @param text The text of the feedback
  */
 const createFeedback = async (text: string) => {
-  const result = db.prepare(`INSERT INTO Feedback (text)
-                             VALUES (?)`).run(text);
-  return {id: result.lastInsertRowid, text}
-}
+  const result = db
+    .prepare(
+      `INSERT INTO Feedback (text)
+                             VALUES (?)`
+    )
+    .run(text);
+  return { id: result.lastInsertRowid, text };
+};
 
 /**
  * Creates a new highlight entry
  * @param args The arguments to create a highlight
  */
 const createHighlight = async (args: CreateHighlightArgs) => {
-  const result = db.prepare(`INSERT INTO Highlight (quote, summary, feedbackId)
-                             VALUES (?, ?, ?)`).run(args.highlightSummary, args.highlightQuote, args.feedbackId);
-  return {id: result.lastInsertRowid, ...result}
-}
+  const result = db
+    .prepare(
+      `INSERT INTO Highlight (quote, summary, feedbackId)
+                             VALUES (?, ?, ?)`
+    )
+    .run(args.highlightSummary, args.highlightQuote, args.feedbackId);
+  return { id: result.lastInsertRowid, ...result };
+};
 
-export default {getFeedback, getFeedbackPage, createFeedback};
+export default {
+  getFeedback,
+  getFeedbackPage,
+  createFeedback,
+  getFeedbackHighlights,
+  countFeedback,
+  createHighlight,
+};

@@ -1,5 +1,7 @@
 import {useEffect, useState} from "react";
-import {Feedback, feedbacksQuery} from "./api.ts";
+import {feedbacksQuery} from "./api.ts";
+import { Feedback } from "../interface/feedback";
+import FeedbackCard from "./components/FeedbackCard.tsx";
 
 
 export default function FeedbackList() {
@@ -14,9 +16,7 @@ export default function FeedbackList() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Feedback</h1>
       {feedbacks.map((feedback) => (
-        <button key={feedback.id} className="bg-slate-700 bg-opacity-20 hover:bg-opacity-30 cursor-pointer rounded-lg py-2 px-4 text-left">
-          <p className="text-red-300">{feedback.text}</p>
-        </button>
+        <FeedbackCard key = {feedback.id} feedback = {feedback}/>
       ))}
     </div>
   );

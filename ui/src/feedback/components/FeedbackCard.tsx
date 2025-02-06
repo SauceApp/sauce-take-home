@@ -1,23 +1,31 @@
-import {  useState } from 'react'
+import {  useEffect, useState } from 'react'
 import { Feedback } from '../../interface/feedback'
 
 interface IFeedbackCardProps {
     feedback: Feedback
 }
 const FeedbackCard = ({feedback}:IFeedbackCardProps) => {
-  const [isFeedbacksOpen,setIsFeedbacksOpen] = useState<boolean>(false)
+  const storageKey = `feedback-${feedback.id}-open`
+  const [isFeedbacksOpen,setIsFeedbacksOpen] = useState<boolean>(() => {
+        const stored = localStorage.getItem(storageKey)
+        return stored ? JSON.parse(stored) : false
+    })
+  useEffect(() => {
+        localStorage.setItem(storageKey, JSON.stringify(isFeedbacksOpen))
+    }, [isFeedbacksOpen, storageKey])
+    
   return (
-    <div className="bg-slate-700 bg-opacity-20 hover:bg-opacity-30 cursor-pointer rounded-lg py-2 px-4 text-left">
-        <button key={feedback.id}  onClick={() => setIsFeedbacksOpen(!isFeedbacksOpen)}>
-          <p className="text-red-300">{feedback.text}</p>
+    <div className="feedback-card">
+        <button key={feedback.id} className='w-full ' onClick={() => setIsFeedbacksOpen(!isFeedbacksOpen) } >
+          <p className="text-red-300 text-left">{feedback.text}</p>
         </button>
         {isFeedbacksOpen &&
           <div>
               {feedback.highlights && feedback.highlights.map(highlight =>(
-              <>
-              <p className="text-yellow-300">{highlight.quote}</p>
-              <p className="text-yellow-300">{highlight.summary}</p>
-              </>
+              <div className='pl-3 border-l-2 border-green-500 mt-2'>
+              <p className="text-green-300">{highlight.quote}</p>
+              <p className="text-gray-400">{highlight.summary}</p>
+              </div>
             ))}
           </div>
         }

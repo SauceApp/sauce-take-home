@@ -27,3 +27,22 @@ export const feedbacksQuery = (
     page,
     per_page,
   });
+
+const createFeedbackDocument = gql`
+  mutation createFeedback($text: String!) {
+    createFeedback(text: $text) {
+      id
+      text
+      highlights {
+        id
+        quote
+        summary
+      }
+    }
+  }
+`;
+
+export const createFeedbackMutation = (
+  text: string
+): Promise<{ createFeedback: Feedback }> =>
+  request("http://localhost:4000/graphql", createFeedbackDocument, { text });

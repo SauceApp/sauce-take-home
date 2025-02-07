@@ -10,6 +10,7 @@ export default function FeedbackList() {
     feedbacksQuery(page, 10).then((result) => setFeedbacks(result.feedbacks.values));
   }, [page]);
 
+  // todo let's split out css, might get ugly
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Feedback</h1>

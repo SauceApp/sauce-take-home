@@ -8,7 +8,7 @@ export default function FeedbackList() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [expandedFeedbacks, setExpandedFeedbacks] = useState<number[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const highlightsPerPage = 1;
+  const highlightsPerPage = 10;
 
   // Fetching total feedback count
   useEffect(() => {

@@ -64,7 +64,8 @@ describe("feedbackService", () => {
 
       // call the createFeedback function
       await feedbackService.createFeedback("testing feedback text");
-      // wait for prompt mock rejection to be caught in createFeedback
+
+      // wait for prompt mock rejection to be caught in createFeedback (500 milliseconds)
       await wait(500);
       // verify that the result is expected
       expect(feedbackStore.updateFeedbackStatus as jest.Mock).toHaveBeenCalledWith(
@@ -72,6 +73,42 @@ describe("feedbackService", () => {
         AnalysisStatus.FAILED,
         `Failed to generate highlight with error: ${mockError.message}`
       );
+    });
+  });
+  describe("getFeedbackPage", () => {
+    it("should return a page of feedback entries", async () => {
+      // mock data
+      const mockFeedbackEntries = [
+        { id: 1, text: "Feedback 1" },
+        { id: 2, text: "Feedback 2" },
+      ];
+
+      (feedbackStore.getFeedbackPage as jest.Mock).mockResolvedValue(mockFeedbackEntries);
+
+      // calling the getFeedbackPage function
+      const page = 1;
+      const perPage = 2;
+      const result = await feedbackService.getFeedbackPage(page, perPage);
+
+      // verify the results
+      expect(feedbackStore.getFeedbackPage).toHaveBeenCalledWith(page, perPage);
+      expect(result.values).toEqual(mockFeedbackEntries);
+      expect(result.count).toBe(mockFeedbackEntries.length);
+    });
+
+    it("should return an empty result if no feedback entries are found", async () => {
+      // testing empty array being returned when getFeedbackPage is called
+      (feedbackStore.getFeedbackPage as jest.Mock).mockResolvedValue([]);
+
+      // call the getFeedbackPage function
+      const page = 1;
+      const perPage = 2;
+      const result = await feedbackService.getFeedbackPage(page, perPage);
+
+      // verify the results
+      expect(feedbackStore.getFeedbackPage).toHaveBeenCalledWith(page, perPage);
+      expect(result.values).toEqual([]);
+      expect(result.count).toBe(0);
     });
   });
 });

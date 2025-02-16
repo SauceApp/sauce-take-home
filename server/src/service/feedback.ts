@@ -7,7 +7,10 @@ import prompt from "../ai/prompt";
  */
 const createFeedback = async (text: string) => {
   const feedback = await feedbackStore.createFeedback(text);
+  // TODO: don't await for highlight
   const analysisResult = await prompt.runFeedbackAnalysis(feedback.text);
+
+  // TODO: change highlights from await to .then which populates the SQL
 
   // passing analysis result which is the highlight array into sql DB
   const highlightPromises: Promise<Object>[] = [];
@@ -29,15 +32,7 @@ const getFeedbackPage = async (page: number, perPage: number) => {
   return {values, count};
 }
 
-/**
- * Gets total number of feedback
- */
-const getTotalFeedback = () => {
-  return feedbackStore.countFeedback();
-}
-
 export default {
   createFeedback,
   getFeedbackPage,
-  getTotalFeedback,
 }

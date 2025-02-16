@@ -1,26 +1,36 @@
-import {useEffect, useState} from "react";
-import {Feedback, feedbacksQuery, feedbackCount} from "./api.ts";
+import { useEffect, useState } from "react";
+import { Highlight, feedbacksQuery, highlightcount, highlightsQuery } from "./api.ts";
 import "./feedback.css";
-
 
 export default function FeedbackList() {
   const [page, setPage] = useState(1);
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  // const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [expandedFeedbacks, setExpandedFeedbacks] = useState<number[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const feedbacksPerPage = 10;
+  const highlightsPerPage = 1;
 
-  // fetching total feedback count
+  // Fetching total feedback count
   useEffect(() => {
-    feedbackCount().then((count) => {
-      setTotalPages(Math.ceil(count.feedbackCount / feedbacksPerPage))
-    })
+    highlightcount().then((count) => {
+      setTotalPages(Math.ceil(count.highlightcount / highlightsPerPage));
+      console.log(count)
+    });
   }, [page]);
 
-  // fetching the feedbacks for the current page
+  // Fetching the feedbacks for the current page
+  // useEffect(() => {
+  //   feedbacksQuery(page, highlightsPerPage).then((result) =>
+  //     setFeedbacks(result.feedbacks.values)
+  //   );
+  // }, [page]);
+
   useEffect(() => {
-    feedbacksQuery(page, feedbacksPerPage).then((result) => setFeedbacks(result.feedbacks.values));
+    highlightsQuery(page, highlightsPerPage).then((result) =>
+      setHighlights(result.highlights.values)
+    );
   }, [page]);
+
 
   const toggleShowMore = (id: number) => {
     setExpandedFeedbacks((prev) =>
@@ -45,37 +55,31 @@ export default function FeedbackList() {
       {/* Content */}
       <div className="space-y-4 flex-grow">
         <h1 className="text-2xl font-semibold">Feedback</h1>
-        {feedbacks.map((feedback) => (
-          <div key={feedback.id} className="feedback-card">
-            {feedback.highlights && feedback.highlights.length > 0 && (
-              <div className="highlight-section">
-                {feedback.highlights.map((highlight, index) => (
-                  <div key={index} className="highlight-item">
-                    <h2 className="highlight-quote">
-                      {highlight.quote}
-                    </h2>
-                    <p className="highlight-summary">
-                      {highlight.summary}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
+        
 
+        {highlights.map((highlight, index) => (
+          <div key={`${highlight.id}-${index}`} className="feedback-card">
+            <div className="highlight-section">
+              <h2 className="highlight-quote">{highlight.quote}</h2>
+              <p className="highlight-summary">{highlight.summary}</p>
+            </div>
             <p className="text-gray-300">
-              {expandedFeedbacks.includes(feedback.id)
-                ? feedback.text
-                : `${feedback.text.slice(0, 100)}...`}
+              {/* Feedback ID: {feedback.id} -{" "} */}
+              {expandedFeedbacks.includes(highlight.id)
+                ? highlight.feedback
+                : `${highlight.feedback.slice(0, 100)}...`}
             </p>
-
-            <button
-              onClick={() => toggleShowMore(feedback.id)}
-              className="text-blue-400 hover:underline mt-2"
-            >
-              {expandedFeedbacks.includes(feedback.id) ? "Show Less" : "Show More"}
-            </button>
-          </div>
-        ))}
+              <button
+                onClick={() => toggleShowMore(highlight.id)}
+                className="text-blue-400 hover:underline mt-2"
+              >
+                {expandedFeedbacks.includes(highlight.id)
+                  ? "Show Less"
+                  : "Show More"}
+              </button>
+            </div>
+          ))  
+        }
       </div>
 
       {/* Pagination controls */}
@@ -91,17 +95,14 @@ export default function FeedbackList() {
         <div className="page-numbers">
           {page > 2 && (
             <>
-              <button
-                onClick={() => setPage(1)}
-                className="pagination-number"
-              >
+              <button onClick={() => setPage(1)} className="pagination-number">
                 1
               </button>
               <span className="ellipsis">...</span>
             </>
           )}
           {Array.from({ length: 3 }, (_, index) => {
-            const pageNumber = page - 1 + index; // calculate current range of pages
+            const pageNumber = page - 1 + index;
             if (pageNumber > 0 && pageNumber <= totalPages) {
               return (
                 <button

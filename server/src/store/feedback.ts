@@ -17,6 +17,18 @@ const getFeedback = async (id: number) => {
 }
 
 /**
+ * Gets a feedback text from its corresponding higlight
+ * @param id The id of the feedback
+ */
+const getFeedbackForHighlight = async (id: number) => {
+  return db.prepare(`SELECT text
+                     FROM Feedback
+                     WHERE id = (SELECT feedbackId 
+                     FROM Highlight 
+                     where id = ?)`).get(id)
+}
+
+/**
  * Gets a page of feedback entries
  * @param page The page number
  * @param perPage The number of entries per page
@@ -39,13 +51,23 @@ const getFeedbackHighlights = async (feedbackId: number) => {
 }
 
 /**
- * Counts the number of feedback entries
- * @returns The number of feedback entries
+ * Gets a page of higlight entries
+ */
+const getHighlightPage = async (page: number, perPage: number) => {
+  return db.prepare(`SELECT *
+                     FROM Highlight
+                     ORDER BY id DESC
+                     LIMIT ? OFFSET ?`).all(perPage, (page - 1) * perPage)
+}
+
+/**
+ * Counts the number of highlight entries
+ * @returns The number of highlight entries
  */
 
-const countFeedback = (): number => {
+const countHighlight = (): number => {
   const stmt = db.prepare(`SELECT COUNT(*) as count
-                          FROM Feedback`);
+                          FROM Highlight`);
   
   const result = stmt.get() as { count: number };
   return result.count;
@@ -71,4 +93,4 @@ const createHighlight = async (args: CreateHighlightArgs) => {
   return {id: result.lastInsertRowid, ...result}
 }
 
-export default {getFeedback, getFeedbackPage, createFeedback, createHighlight, getFeedbackHighlights, countFeedback};
+export default {getFeedback, getFeedbackPage, createFeedback, createHighlight, getFeedbackHighlights, countHighlight, getHighlightPage, getFeedbackForHighlight};

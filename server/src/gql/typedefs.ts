@@ -5,7 +5,8 @@ const typeDefs = /* GraphQL */ `
   type Query {
     feedback(id: Int!): Feedback
     feedbacks(page: Int!, per_page: Int!): FeedbackPage!
-    feedbackCount: Int!
+    highlightcount: Int!
+    highlights(page: Int!, per_page: Int!): HighlightPage!
   }
   
   type Mutation {
@@ -22,10 +23,16 @@ const typeDefs = /* GraphQL */ `
     id: Int!
     quote: String!
     summary: String!
+    feedback: String!
   }
 
   type FeedbackPage {
     values: [Feedback!]!
+    count: Int!
+  }
+
+  type HighlightPage {
+    values: [Highlight!]!
     count: Int!
   }
 `;

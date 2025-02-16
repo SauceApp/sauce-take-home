@@ -35,3 +35,10 @@ export const feedbacksQuery = (page: number, per_page: number): Promise<Feedback
     page,
     per_page
   })
+
+export const feedbackCount = async (): Promise<{ feedbackCount: number}> => 
+  request('http://localhost:4000/graphql', 
+    `query {
+      feedbackCount
+    }`
+  );

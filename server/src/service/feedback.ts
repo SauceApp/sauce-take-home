@@ -29,7 +29,15 @@ const getFeedbackPage = async (page: number, perPage: number) => {
   return {values, count};
 }
 
+/**
+ * Gets total number of feedback
+ */
+const getTotalFeedback = () => {
+  return feedbackStore.countFeedback();
+}
+
 export default {
   createFeedback,
   getFeedbackPage,
+  getTotalFeedback,
 }

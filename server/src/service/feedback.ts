@@ -9,6 +9,12 @@ const createFeedback = async (text: string) => {
   const feedback = await feedbackStore.createFeedback(text);
   const analysisResult = await prompt.runFeedbackAnalysis(feedback.text);
 
+  // passing analysis result which is the highlight array into sql DB
+  const highlightPromises: Promise<Object>[] = [];
+  analysisResult.highlights.forEach((hl) => {
+    highlightPromises.push(feedbackStore.createHighlight({feedbackId: feedback.id, highlightSummary: hl.summary, highlightQuote: hl.quote }));
+  });
+  await Promise.all(highlightPromises);
   return feedback;
 }
 

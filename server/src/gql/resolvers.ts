@@ -18,9 +18,10 @@ const resolvers = {
       return feeedbackService.createFeedback(args.text)
     }
   },
+  // use the id from the parent object to query from db
   Feedback: {
-    highlights: () => {
-      return []
+    highlights: (parent: {id: number}) => {
+      return feedbackStore.getFeedbackHighlights(parent.id)
     }
   }
 };

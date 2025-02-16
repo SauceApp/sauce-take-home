@@ -8,7 +8,6 @@ import { AnalysisStatus } from "../store/model";
  */
 const createFeedback = async (text: string) => {
   const feedback = await feedbackStore.createFeedback(text);
-  // TODO: don't await for highlight
   const analysisPromise = prompt.runFeedbackAnalysis(feedback.text);
 
   // passing analysis result which is the highlight array into sql DB

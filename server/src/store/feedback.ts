@@ -1,4 +1,5 @@
 import db from "./db";
+import { AnalysisStatus, Feedback } from "./model";
 
 type CreateHighlightArgs = {
   feedbackId: number | bigint;
@@ -56,7 +57,7 @@ const getFeedbackHighlights = async (feedbackId: number) => {
 const getHighlightPage = async (page: number, perPage: number) => {
   return db.prepare(`SELECT *
                      FROM Highlight
-                     ORDER BY id DESC
+                     ORDER BY id ASC
                      LIMIT ? OFFSET ?`).all(perPage, (page - 1) * perPage)
 }
 
@@ -78,9 +79,28 @@ const countHighlight = (): number => {
  * @param text The text of the feedback
  */
 const createFeedback = async (text: string) => {
-  const result = db.prepare(`INSERT INTO Feedback (text)
-                             VALUES (?)`).run(text);
-  return {id: result.lastInsertRowid, text}
+  const createStatus = AnalysisStatus.IN_PROGRESS;
+  const createMessage = "Highlight analysis is in progress";
+  const result = db.prepare(`INSERT INTO Feedback (text, status, message)
+                             VALUES (?, ?, ?)`)
+                              .run(text, 
+                                createStatus,
+                                createMessage);
+  return {id: result.lastInsertRowid, text, status: createStatus, message: createMessage}
+}
+
+
+/**
+ * Update feedback status
+ */
+const updateFeedbackStatus = async (id: number, status: AnalysisStatus, message?: string) => {
+  db.prepare(`UPDATE Feedback 
+              SET status = ?, 
+              message = CASE
+                            WHEN ? IS NOT NULL THEN ?
+                            ELSE message
+                        END
+              where id = ?`).run(status,message,message,id);
 }
 
 /**
@@ -93,4 +113,4 @@ const createHighlight = async (args: CreateHighlightArgs) => {
   return {id: result.lastInsertRowid, ...result}
 }
 
-export default {getFeedback, getFeedbackPage, createFeedback, createHighlight, getFeedbackHighlights, countHighlight, getHighlightPage, getFeedbackForHighlight};
+export default {getFeedback, getFeedbackPage, createFeedback, createHighlight, getFeedbackHighlights, countHighlight, getHighlightPage, updateFeedbackStatus, getFeedbackForHighlight};

@@ -1,5 +1,6 @@
 import feedbackStore from "../store/feedback";
 import prompt from "../ai/prompt";
+import { AnalysisStatus } from "../store/model";
 
 /**
  * Creates a feedback entry and runs analysis on it.
@@ -8,16 +9,18 @@ import prompt from "../ai/prompt";
 const createFeedback = async (text: string) => {
   const feedback = await feedbackStore.createFeedback(text);
   // TODO: don't await for highlight
-  const analysisResult = await prompt.runFeedbackAnalysis(feedback.text);
-
-  // TODO: change highlights from await to .then which populates the SQL
+  const analysisPromise = prompt.runFeedbackAnalysis(feedback.text);
 
   // passing analysis result which is the highlight array into sql DB
-  const highlightPromises: Promise<Object>[] = [];
-  analysisResult.highlights.forEach((hl) => {
-    highlightPromises.push(feedbackStore.createHighlight({feedbackId: feedback.id, highlightSummary: hl.summary, highlightQuote: hl.quote }));
+  analysisPromise.then((analysis) =>  {
+    analysis.highlights.forEach((hl) => {
+      feedbackStore.createHighlight({feedbackId: feedback.id, highlightSummary: hl.summary, highlightQuote: hl.quote });
+    })
+    feedbackStore.updateFeedbackStatus(feedback.id as number, AnalysisStatus.COMPLETE, `Successfully generated highlights`);
+  })
+  .catch((err) => {
+    feedbackStore.updateFeedbackStatus(feedback.id as number, AnalysisStatus.FAILED, `Failed to generate highlight with error: ${err.message}`);
   });
-  await Promise.all(highlightPromises);
   return feedback;
 }
 

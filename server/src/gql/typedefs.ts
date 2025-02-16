@@ -11,11 +11,14 @@ const typeDefs = /* GraphQL */ `
   
   type Mutation {
     createFeedback(text: String!): Feedback!
+    bulkCreateFeedback(texts: [String!]!): [Feedback]!
   }
 
   type Feedback {
     id: Int!
     text: String!
+    status: String!
+    message: String!
     highlights: [Highlight!]
   }
 

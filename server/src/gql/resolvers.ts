@@ -2,6 +2,7 @@ import feedbackStore from "../store/feedback";
 import feeedbackService from "../service/feedback";
 import feedback from "../store/feedback";
 import { count } from "console";
+import { text } from "stream/consumers";
 
 /**
  * GraphQL Resolvers
@@ -25,8 +26,10 @@ const resolvers = {
   Mutation: {
     createFeedback: (parent: unknown, args: { text: string }) => {
       return feeedbackService.createFeedback(args.text)
+    },
+    bulkCreateFeedback: (_: unknown, args: { texts: string[] }) => {
+      return args.texts.map((text) => feeedbackService.createFeedback(text))
     }
-    //TODO: make a bulk feedback creator, takes array of text and returns array of IDs
   },
   // use the id from the parent object to query from db
   Feedback: {

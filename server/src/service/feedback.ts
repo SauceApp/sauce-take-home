@@ -7,10 +7,29 @@ import prompt from "../ai/prompt";
  */
 const createFeedback = async (text: string) => {
   const feedback = await feedbackStore.createFeedback(text);
-  const analysisResult = await prompt.runFeedbackAnalysis(feedback.text);
+
+  prompt
+    .runFeedbackAnalysis(feedback.text)
+    .then((analysisResult) => {
+      if (
+        analysisResult.highlights &&
+        Array.isArray(analysisResult.highlights)
+      ) {
+        analysisResult.highlights.forEach((highlight) => {
+          feedbackStore.createHighlight({
+            feedbackId: feedback.id,
+            highlightSummary: highlight.summary,
+            highlightQuote: highlight.quote,
+          });
+        });
+      }
+    })
+    .catch((err) => {
+      console.error("Error generating highlights:", err);
+    });
 
   return feedback;
-}
+};
 
 /**
  * Gets a page of feedback entries
@@ -20,10 +39,10 @@ const createFeedback = async (text: string) => {
 const getFeedbackPage = async (page: number, perPage: number) => {
   const values = await feedbackStore.getFeedbackPage(page, perPage);
   const count = values.length;
-  return {values, count};
-}
+  return { values, count };
+};
 
 export default {
   createFeedback,
   getFeedbackPage,
-}
+};

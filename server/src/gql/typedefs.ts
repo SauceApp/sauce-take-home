@@ -6,7 +6,7 @@ const typeDefs = /* GraphQL */ `
     feedback(id: Int!): Feedback
     feedbacks(page: Int!, per_page: Int!): FeedbackPage!
   }
-  
+
   type Mutation {
     createFeedback(text: String!): Feedback!
   }
@@ -26,6 +26,10 @@ const typeDefs = /* GraphQL */ `
   type FeedbackPage {
     values: [Feedback!]!
     count: Int!
+  }
+
+  type Subscription {
+    feedbackAdded: Feedback!
   }
 `;
 

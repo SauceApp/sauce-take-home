@@ -70,5 +70,10 @@ const createHighlight = async (args: CreateHighlightArgs) => {
                              VALUES (?, ?, ?)`).run(args.highlightSummary, args.highlightQuote, args.feedbackId);
   return {id: result.lastInsertRowid, ...result}
 }
-
-export default {getFeedback, getFeedbackPage, createFeedback};
+export default {
+  getFeedback,
+  getFeedbackPage,
+  createFeedback,
+  getFeedbackHighlights,
+  createHighlight,
+};

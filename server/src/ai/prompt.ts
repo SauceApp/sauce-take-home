@@ -31,7 +31,7 @@ const runFeedbackAnalysis = async (feedback: string): Promise<HighlightPromptRes
     "The feedback to analyze:" +
     "\n" +
     feedback;
-
+    
   console.log();
   console.log(`+++++++ FEEDBACK ANALYSIS START ID (${promptId}) +++++++`);
   console.log(prompt);
@@ -51,7 +51,7 @@ const runFeedbackAnalysis = async (feedback: string): Promise<HighlightPromptRes
 
   const parsed = highlightPromptResultSchema.safeParse(
     JSON.parse(response.choices[0].message.content)
-  );
+  );  
   if (!parsed.success) {
     throw new Error("Failed to parse OpenAI response.");
   }

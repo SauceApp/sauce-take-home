@@ -9,6 +9,16 @@ const createFeedback = async (text: string) => {
   const feedback = await feedbackStore.createFeedback(text);
   const analysisResult = await prompt.runFeedbackAnalysis(feedback.text);
 
+  if (analysisResult.highlights && analysisResult.highlights.length > 0) {
+    for (const highlight of analysisResult.highlights) {
+      await feedbackStore.createHighlight({
+        feedbackId: feedback.id,
+        highlightQuote: highlight.quote,
+        highlightSummary: highlight.summary,
+      })
+    }
+  }
+
   return feedback;
 }
 

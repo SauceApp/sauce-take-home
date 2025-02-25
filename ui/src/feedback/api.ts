@@ -1,16 +1,28 @@
 import {gql, request} from "graphql-request";
 
+export type Highlight = {
+  id: number;
+  quote: string;
+  summary: string;
+};
+
 export type Feedback = {
   id: number
   text: string
+  highlights: Highlight[]
 }
 
 const feedbacksDocument = gql`
-  query feedbacks($page: Int!, $per_page: Int!) {
+query feedbacks($page: Int!, $per_page: Int!) {
     feedbacks(page: $page, per_page: $per_page) {
       values {
         id
         text
+        highlights {
+          id
+          quote
+          summary
+        }
       }
       count
     }

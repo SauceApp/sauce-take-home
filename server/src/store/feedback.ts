@@ -71,4 +71,4 @@ const createHighlight = async (args: CreateHighlightArgs) => {
   return {id: result.lastInsertRowid, ...result}
 }
 
-export default {getFeedback, getFeedbackPage, createFeedback};
+export default {getFeedback, getFeedbackPage, createFeedback, createHighlight, getFeedbackHighlights};

@@ -11,7 +11,7 @@
   "author": "jszklarz@sauce.app",
   "dependencies": {
     "@graphql-tools/schema": "^10.0.2",
-    "better-sqlite3": "^9.4.3",
+    "better-sqlite3": "^11.8.1",
     "graphql": "^16.8.1",
     "graphql-yoga": "^5.1.1",
     "openai": "^4.28.0",

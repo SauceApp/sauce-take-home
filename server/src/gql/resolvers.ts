@@ -17,10 +17,17 @@ const resolvers = {
     createFeedback: (parent: unknown, args: { text: string }) => {
       return feeedbackService.createFeedback(args.text)
     }
-  },
+    ,
+  
+    createBulkFeedback: (parent: unknown, args: { text: string[] }) => {
+      return feeedbackService.createBulkFeedback(args.text)
+    }
+      ,
+  }
+  ,
   Feedback: {
-    highlights: () => {
-      return []
+    highlights: (parent: { id: number }) => {
+      return feedbackStore.getFeedbackHighlights(parent.id);
     }
   }
 };
